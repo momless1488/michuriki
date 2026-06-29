@@ -1,76 +1,723 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>IT Вакансии Уфы</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Вакансии Уфы | Агрегатор</title>
+
+    <!-- Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { font-family: Arial; margin: 20px; background: #f4f4f4; }
-        .filters { margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th { background: #333; color: white; padding: 10px; }
-        td { padding: 10px; border-bottom: 1px solid #ddd; }
-        .filter-select, .search-input { padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .container {
+            background: rgba(30, 30, 46, 0.95);
+            color: #e0e0e0;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        body.dark-mode .header-left h1 {
+            background: linear-gradient(135deg, #a8b4f0 0%, #c084d8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-dark {
+            background: #2d2d44;
+            color: white;
+        }
+
+        .btn-dark:hover {
+            background: #3d3d5c;
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .btn-dark {
+            background: #4a4a6a;
+            color: white;
+        }
+
+        body.dark-mode .btn-dark:hover {
+            background: #5a5a7a;
+        }
+
+        /* ===== STATS BAR ===== */
+        .stats-bar {
+            display: flex;
+            gap: 30px;
+            padding: 15px 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 16px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        body.dark-mode .stats-bar {
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-item i {
+            font-size: 20px;
+            color: #667eea;
+        }
+
+        body.dark-mode .stat-item i {
+            color: #a8b4f0;
+        }
+
+        .stat-item .number {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2d2d44;
+        }
+
+        body.dark-mode .stat-item .number {
+            color: #e0e0e0;
+        }
+
+        .stat-item .label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        body.dark-mode .stat-item .label {
+            color: #aaa;
+        }
+
+        /* ===== FILTERS ===== */
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+        }
+
+        body.dark-mode .filters {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .filter-group i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 12px 12px 12px 42px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        body.dark-mode .filter-group input,
+        body.dark-mode .filter-group select {
+            background: #2d2d44;
+            border-color: #4a4a6a;
+            color: #e0e0e0;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        }
+
+        /* ===== VACANCIES GRID ===== */
+        .vacancies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 20px;
+            margin-top: 5px;
+        }
+
+        /* ===== VACANCY CARD ===== */
+        .vacancy-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        body.dark-mode .vacancy-card {
+            background: #2d2d44;
+            border-color: #3d3d5c;
+        }
+
+        .vacancy-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            border-color: #667eea;
+        }
+
+        body.dark-mode .vacancy-card:hover {
+            border-color: #a8b4f0;
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .vacancy-card .badge-source {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(102, 126, 234, 0.15);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        body.dark-mode .vacancy-card .badge-source {
+            background: rgba(102, 126, 234, 0.25);
+            color: #a8b4f0;
+        }
+
+        .vacancy-card .company-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 14px;
+        }
+
+        .vacancy-card .company-name {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        body.dark-mode .vacancy-card .company-name {
+            color: #aaa;
+        }
+
+        /* Если компания не указана — делаем текст серым и курсивом */
+        .vacancy-card .company-name.unknown {
+            color: #999;
+            font-style: italic;
+        }
+
+        body.dark-mode .vacancy-card .company-name.unknown {
+            color: #777;
+        }
+
+        .vacancy-card .title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .vacancy-card .title {
+            color: #e0e0e0;
+        }
+
+        /* ===== SALARY ===== */
+        /* Всегда фиолетовый, кроме случая "Не указана" */
+        .vacancy-card .salary {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 10px 0 14px;
+            color: #764ba2;
+        }
+
+        body.dark-mode .vacancy-card .salary {
+            color: #c084d8;
+        }
+
+        /* Если зарплата не указана — делаем серой */
+        .vacancy-card .salary.unknown-salary {
+            color: #999;
+            font-weight: 600;
+        }
+
+        body.dark-mode .vacancy-card .salary.unknown-salary {
+            color: #777;
+        }
+
+        .vacancy-card .link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .vacancy-card .link:hover {
+            gap: 12px;
+            color: #764ba2;
+        }
+
+        body.dark-mode .vacancy-card .link {
+            color: #a8b4f0;
+        }
+
+        body.dark-mode .vacancy-card .link:hover {
+            color: #c084d8;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .vacancy-card:nth-child(1) { animation-delay: 0.05s; }
+        .vacancy-card:nth-child(2) { animation-delay: 0.1s; }
+        .vacancy-card:nth-child(3) { animation-delay: 0.15s; }
+        .vacancy-card:nth-child(4) { animation-delay: 0.2s; }
+        .vacancy-card:nth-child(5) { animation-delay: 0.25s; }
+        .vacancy-card:nth-child(6) { animation-delay: 0.3s; }
+        .vacancy-card:nth-child(7) { animation-delay: 0.35s; }
+        .vacancy-card:nth-child(8) { animation-delay: 0.4s; }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #ddd;
+        }
+
+        body.dark-mode .empty-state i {
+            color: #4a4a6a;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+                border-radius: 16px;
+            }
+
+            .header-left h1 {
+                font-size: 20px;
+            }
+
+            .vacancies-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                min-width: 100%;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .header-actions {
+                justify-content: stretch;
+            }
+
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .vacancy-card {
+                padding: 16px;
+            }
+
+            .vacancy-card .title {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Агрегатор IT-вакансий (Уфа)</h1>
-    
-    <div class="filters">
-        <input class="search-input" id="searchInput" placeholder="🔍 Поиск по названию...">
-        <select class="filter-select" id="companyFilter">
-            <option value="">Все компании</option>
-        </select>
-        <span>Найдено: <b id="countResult">0</b></span>
+
+<div class="container">
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <div class="header-left">
+            <i class="fas fa-briefcase" style="font-size: 32px; color: #667eea;"></i>
+            <h1>IT Вакансии Уфы</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Обновить
+            </button>
+            <button class="btn btn-dark" id="themeToggle">
+                <i class="fas fa-moon"></i> Тёмная
+            </button>
+        </div>
     </div>
- 
-    <table>
-        <thead><tr><th>Компания</th><th>Должность</th><th>Зарплата</th><th>Ссылка</th></tr></thead>
-        <tbody id="vacanciesBody"></tbody>
-    </table>
- 
-    <script>
-        let allVacancies = [];
- 
-        function render() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const company = document.getElementById('companyFilter').value;
- 
-            const filtered = allVacancies.filter(v => {
-                const matchTitle = v.title.toLowerCase().includes(search);
-                const matchCompany = company === '' || v.company === company;
-                return matchTitle && matchCompany;
-            });
- 
-            const tbody = document.getElementById('vacanciesBody');
-            tbody.innerHTML = filtered.map(v => `
-                <tr>
-                    <td>${v.company}</td>
-                    <td>${v.title}</td>
-                    <td>${v.salary}</td>
-                    <td><a href="${v.url}" target="_blank">Перейти</a></td>
-                </tr>
-            `).join('');
-            document.getElementById('countResult').innerText = filtered.length;
+
+    <!-- ===== STATS ===== -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <i class="fas fa-list"></i>
+            <span class="number" id="countResult">0</span>
+            <span class="label">вакансий</span>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-building"></i>
+            <span class="number" id="companyCount">0</span>
+            <span class="label">компаний</span>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-tag"></i>
+            <span class="number" id="sourceCount">0</span>
+            <span class="label">источников</span>
+        </div>
+    </div>
+
+    <!-- ===== FILTERS ===== -->
+    <div class="filters">
+        <div class="filter-group">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Поиск по должности...">
+        </div>
+        <div class="filter-group">
+            <i class="fas fa-building"></i>
+            <select id="companyFilter">
+                <option value="">Все компании</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <i class="fas fa-sort"></i>
+            <select id="sortSelect">
+                <option value="default">По умолчанию</option>
+                <option value="salary-asc">Зарплата ↑</option>
+                <option value="salary-desc">Зарплата ↓</option>
+                <option value="company">Компания (А-Я)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- ===== VACANCIES ===== -->
+    <div id="vacanciesContainer">
+        <div class="vacancies-grid" id="vacanciesGrid"></div>
+    </div>
+</div>
+
+<script>
+    // ============================
+    // DATA & STATE
+    // ============================
+    let allVacancies = [];
+    let currentTheme = localStorage.getItem('theme') || 'light';
+
+    // ============================
+    // DOM REFS
+    // ============================
+    const grid = document.getElementById('vacanciesGrid');
+    const searchInput = document.getElementById('searchInput');
+    const companyFilter = document.getElementById('companyFilter');
+    const sortSelect = document.getElementById('sortSelect');
+    const countResult = document.getElementById('countResult');
+    const companyCount = document.getElementById('companyCount');
+    const sourceCount = document.getElementById('sourceCount');
+    const themeToggle = document.getElementById('themeToggle');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    // ============================
+    // THEME
+    // ============================
+    function applyTheme(theme) {
+        document.body.classList.toggle('dark-mode', theme === 'dark');
+        themeToggle.innerHTML = theme === 'dark'
+            ? '<i class="fas fa-sun"></i> Светлая'
+            : '<i class="fas fa-moon"></i> Тёмная';
+        localStorage.setItem('theme', theme);
+        currentTheme = theme;
+    }
+
+    themeToggle.addEventListener('click', () => {
+        applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+    });
+
+    applyTheme(currentTheme);
+
+    // ============================
+    // HELPER: parse salary for sorting
+    // ============================
+    function parseSalary(salary) {
+        if (!salary || salary === 'Не указана') return 0;
+        const nums = salary.match(/\d+/g);
+        if (!nums) return 0;
+        // берем первое число (среднее или минимальное)
+        return parseInt(nums[0], 10) || 0;
+    }
+
+    // ============================
+    // RENDER
+    // ============================
+    function render() {
+        const search = searchInput.value.toLowerCase().trim();
+        const company = companyFilter.value;
+        const sortType = sortSelect.value;
+
+        let filtered = allVacancies.filter(v => {
+            const matchTitle = v.title.toLowerCase().includes(search);
+            const matchCompany = company === '' || v.company === company;
+            return matchTitle && matchCompany;
+        });
+
+        // Сортировка
+        if (sortType === 'salary-asc') {
+            filtered.sort((a, b) => parseSalary(a.salary) - parseSalary(b.salary));
+        } else if (sortType === 'salary-desc') {
+            filtered.sort((a, b) => parseSalary(b.salary) - parseSalary(a.salary));
+        } else if (sortType === 'company') {
+            filtered.sort((a, b) => a.company.localeCompare(b.company));
+        } else {
+            // default — порядок из JSON
         }
- 
-        function updateFilters() {
-            const companies = [...new Set(allVacancies.map(v => v.company))];
-            const select = document.getElementById('companyFilter');
-            select.innerHTML = '<option value="">Все компании</option>' + 
-                companies.map(c => `<option value="${c}">${c}</option>`).join('');
+
+        // Stats
+        const uniqueCompanies = new Set(filtered.map(v => v.company));
+        const uniqueSources = new Set(filtered.map(v => v.source || 'unknown'));
+
+        countResult.textContent = filtered.length;
+        companyCount.textContent = uniqueCompanies.size;
+        sourceCount.textContent = uniqueSources.size;
+
+        // Render cards
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <i class="fas fa-inbox"></i>
+                    <p style="font-size: 18px; font-weight: 600;">Ничего не найдено</p>
+                    <p style="font-size: 14px; color: #999;">Попробуйте изменить параметры поиска</p>
+                </div>
+            `;
+            return;
         }
- 
+
+        grid.innerHTML = filtered.map((v, index) => {
+            const companyInitial = v.company.charAt(0).toUpperCase() || '?';
+
+            // Проверяем, указана ли компания
+            const isCompanyUnknown = v.company === 'Неизвестно';
+            const companyDisplayName = isCompanyUnknown ? 'Компания не указана' : v.company;
+            const companyClass = isCompanyUnknown ? 'company-name unknown' : 'company-name';
+
+            // Проверяем, указана ли зарплата
+            const isSalaryUnknown = !v.salary || v.salary === 'Не указана';
+            const salaryDisplay = isSalaryUnknown ? 'Не указана' : v.salary;
+            const salaryClass = isSalaryUnknown ? 'salary unknown-salary' : 'salary';
+
+            return `
+                <div class="vacancy-card" style="animation-delay: ${(index % 8) * 0.05}s;">
+                    <span class="badge-source">${v.source || 'неизвестно'}</span>
+                    <div class="company-avatar">${companyInitial}</div>
+                    <div class="${companyClass}">${companyDisplayName}</div>
+                    <div class="title">${v.title}</div>
+                    <div class="${salaryClass}">${salaryDisplay}</div>
+                    <a href="${v.url}" target="_blank" class="link">
+                        Подробнее <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ============================
+    // UPDATE FILTERS (companies)
+    // ============================
+    function updateFilters() {
+        const companies = [...new Set(allVacancies.map(v => v.company))].sort();
+        companyFilter.innerHTML = `
+            <option value="">Все компании</option>
+            ${companies.map(c => `<option value="${c}">${c}</option>`).join('')}
+        `;
+    }
+
+    // ============================
+    // LOAD DATA
+    // ============================
+    function loadData() {
         fetch('vacancies.json')
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
             .then(data => {
                 allVacancies = data;
                 updateFilters();
                 render();
             })
-            .catch(err => alert('Ошибка загрузки данных. Запустите сервер (python -m http.server 8000)'));
- 
-        document.getElementById('searchInput').addEventListener('input', render);
-        document.getElementById('companyFilter').addEventListener('change', render);
-    </script>
+            .catch(err => {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                        <p style="font-size: 18px; font-weight: 600;">Ошибка загрузки данных</p>
+                        <p style="font-size: 14px; color: #999;">${err.message}</p>
+                        <button class="btn btn-primary" style="margin-top: 16px;" onclick="loadData()">
+                            <i class="fas fa-redo"></i> Попробовать снова
+                        </button>
+                    </div>
+                `;
+                console.error('Load error:', err);
+            });
+    }
+
+    // ============================
+    // EVENTS
+    // ============================
+    searchInput.addEventListener('input', render);
+    companyFilter.addEventListener('change', render);
+    sortSelect.addEventListener('change', render);
+    refreshBtn.addEventListener('click', loadData);
+
+    // ============================
+    // INIT
+    // ============================
+    loadData();
+
+    console.log('🚀 Агрегатор IT-вакансий Уфы загружен!');
+    console.log('📊 Всего вакансий:', allVacancies.length);
+</script>
+
 </body>
 </html>
