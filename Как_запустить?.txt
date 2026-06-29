@@ -1,0 +1,12 @@
+--- Linux ---
+cd ~/Desktop/Название папки с парсером
+
+python3 manager.py
+-------------
+
+
+--- Windows ---
+cd C:\Users\%USERNAME%\Desktop\Название папки с парсером
+
+python manager.py   или    py manager.py
+---------------

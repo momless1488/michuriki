@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>IT Вакансии Уфы</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background: #f4f4f4; }
+        .filters { margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #333; color: white; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #ddd; }
+        .filter-select, .search-input { padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Агрегатор IT-вакансий (Уфа)</h1>
+    
+    <div class="filters">
+        <input class="search-input" id="searchInput" placeholder="🔍 Поиск по названию...">
+        <select class="filter-select" id="companyFilter">
+            <option value="">Все компании</option>
+        </select>
+        <span>Найдено: <b id="countResult">0</b></span>
+    </div>
+ 
+    <table>
+        <thead><tr><th>Компания</th><th>Должность</th><th>Зарплата</th><th>Ссылка</th></tr></thead>
+        <tbody id="vacanciesBody"></tbody>
+    </table>
+ 
+    <script>
+        let allVacancies = [];
+ 
+        function render() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const company = document.getElementById('companyFilter').value;
+ 
+            const filtered = allVacancies.filter(v => {
+                const matchTitle = v.title.toLowerCase().includes(search);
+                const matchCompany = company === '' || v.company === company;
+                return matchTitle && matchCompany;
+            });
+ 
+            const tbody = document.getElementById('vacanciesBody');
+            tbody.innerHTML = filtered.map(v => `
+                <tr>
+                    <td>${v.company}</td>
+                    <td>${v.title}</td>
+                    <td>${v.salary}</td>
+                    <td><a href="${v.url}" target="_blank">Перейти</a></td>
+                </tr>
+            `).join('');
+            document.getElementById('countResult').innerText = filtered.length;
+        }
+ 
+        function updateFilters() {
+            const companies = [...new Set(allVacancies.map(v => v.company))];
+            const select = document.getElementById('companyFilter');
+            select.innerHTML = '<option value="">Все компании</option>' + 
+                companies.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+ 
+        fetch('vacancies.json')
+            .then(res => res.json())
+            .then(data => {
+                allVacancies = data;
+                updateFilters();
+                render();
+            })
+            .catch(err => alert('Ошибка загрузки данных. Запустите сервер (python -m http.server 8000)'));
+ 
+        document.getElementById('searchInput').addEventListener('input', render);
+        document.getElementById('companyFilter').addEventListener('change', render);
+    </script>
+</body>
+</html>
