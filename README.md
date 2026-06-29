@@ -1,2 +1,0 @@
-# michuriki
-parser_vakansiy
