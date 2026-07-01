@@ -10,6 +10,9 @@ python3 manager.py
 --- Windows ---
 cd C:\Users\%USERNAME%\Desktop\Название папки с парсером
 
+если вывводит, что Системе не удается найти указанный путь, то скорее всего Desktop находится в  OneDrive тогда это должно выглядеть так:
+cd C:\Users\%USERNAME%\OneDrive\Desktop\Название папки с парсером
+
 python manager.py   или    py manager.py
 ---------------
 После запуска введите "1" и нажмите enter,после завершения установки еще раз нажмите enter
